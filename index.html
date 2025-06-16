@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tool Dự Đoán Tài/Xỉu Go88 DEEPLOGIC V12</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #ff0080, #7928ca, #2afadf, #72f6d1);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      font-family: 'Arial Black', sans-serif;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+    .rainbow-text {
+      background: linear-gradient(90deg, red, orange, yellow, green, cyan, blue, violet);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+    }
+    input, button, select {
+      padding: 12px;
+      margin: 10px;
+      border-radius: 10px;
+      border: none;
+      font-size: 18px;
+      background: linear-gradient(90deg, violet, blue, green, yellow, orange, red);
+      color: white;
+      font-weight: bold;
+    }
+    .history {
+      margin-top: 20px;
+      font-size: 16px;
+      text-align: left;
+    }
+    .container {
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 20px;
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 0 15px white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="rainbow-text">Tool Dự Đoán Tài/Xỉu Go88 DEEPLOGIC V12</h1>
+    <input id="md5Input" type="text" placeholder="🎲 Nhập mã MD5" />
+    <input id="voncoban" type="number" placeholder=" Nhập số vốn" />
+    <br/>
+    <select id="modeSelector">
+      <option value="auto"> AI Tự động (Auto-Switch)</option>
+      <option value="modeA"> Chế độ Sáng (A)</option>
+      <option value="modeB"> Chế độ Tối (B)</option>
+      <option value="modeC"> Chế độ Khác (C)</option>
+    </select>
+    <br/>
+    <button onclick="predict()">✨ Dự đoán</button>
+    <div id="result" class="rainbow-text" style="font-size:24px; margin-top:10px;"></div>
+    <div id="suggestion" style="margin-top:10px;"></div>
+    <div id="history" class="history"></div>
+    <div style="margin-top:30px;">
+      <span class="rainbow-text">Cre: Trần Quốc Trịnh – Trùm Kéo Thuê Go88</span>
+    </div>
+  </div>
+
+  <script>
+    let historyData = [];
+
+    function getPrediction(md5, mode) {
+      const parse = (s) => parseInt(s, 16);
+      if (mode === "modeA") return parse(md5.slice(0, 6)) % 2;
+      if (mode === "modeB") return parse(md5.slice(-6)) % 2;
+      if (mode === "modeC") return parse(md5.slice(12, 18)) % 2;
+      return null;
+    }
+
+    function predict() {
+      const md5 = document.getElementById("md5Input").value.trim();
+      const von = parseFloat(document.getElementById("voncoban").value);
+      const modeSelect = document.getElementById("modeSelector").value;
+      let prediction = null;
+      let usedMode = modeSelect;
+
+      if (!md5 || md5.length < 32) {
+        alert("Mã MD5 không hợp lệ!");
+        return;
+      }
+
+      if (modeSelect === "auto") {
+        const modes = ["modeA", "modeB", "modeC"];
+        for (let i = 0; i < modes.length; i++) {
+          prediction = getPrediction(md5, modes[i]);
+          if (prediction !== null) {
+            usedMode = modes[i];
+            break;
+          }
+        }
+      } else {
+        prediction = getPrediction(md5, modeSelect);
+      }
+
+      const resultText = prediction === 1 ? "🎲 TÀI" : "🎲 XỈU";
+      const percentTai = prediction === 1 ? 80 : 20;
+      const percentXiu = 100 - percentTai;
+      const goiy = von ? ` Gợi ý cược: ${(von * 0.4).toFixed(0)} đ` : "";
+
+      document.getElementById("result").innerHTML = `${resultText} (${percentTai}% Tài - ${percentXiu}% Xỉu)<br/><small>Thuật toán: ${usedMode.toUpperCase()}</small>`;
+      document.getElementById("suggestion").innerText = goiy;
+      historyData.unshift(`→ ${resultText} | Mã: ${md5.slice(0, 8)}... | ${usedMode.toUpperCase()}`);
+      historyData = historyData.slice(0, 10);
+      document.getElementById("history").innerHTML = historyData.map(h => `<div>${h}</div>`).join("");
+      document.getElementById("md5Input").value = "";
+    }
+  </script>
+</body>
+</html>
